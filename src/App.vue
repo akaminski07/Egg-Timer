@@ -70,7 +70,7 @@ onMounted(() => {
 
 
   <input class=" mt-3 mb-3 form-control" v-model="customTime" placeholder="Time (s)" />
-  <button class="btn" @click="startTimer(customTime)">Set</button>
+  <button class="btn" style="width: 8rem" @click="startTimer(customTime)">Set</button>
 </template>
 
 <style>
@@ -119,7 +119,8 @@ h1 {
   font-size: 20px;
   color: white;
   transition: transform 0.5s ease, background-color 0.2s ease;
-  font-family: "Jersey 10"
+  font-family: "Jersey 10";
+
 }
 
 .btn:hover {
