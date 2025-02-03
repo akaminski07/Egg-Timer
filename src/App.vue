@@ -11,7 +11,7 @@ const timeline = gsap.timeline({ repeat: -1, yoyo: true});
 
 
 
-const alarmSound = new Audio("public/alarm.mp3");
+const alarmSound = new Audio("/alarm.wav");
 alarmSound.volume = 0.1;
 
 const startTimer = (seconds) => {
