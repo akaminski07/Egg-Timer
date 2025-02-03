@@ -58,7 +58,7 @@ onMounted(() => {
 <template>
 
   <img class="eggImg" src="/public/funny_egg.png" alt="egg" />
-    <h1 class="black">Egg Timer</h1>
+    <h1 class="black">Egg Timer(This is a test)</h1>
   <h1 class="time">{{time}}</h1>
 
 
