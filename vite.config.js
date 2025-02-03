@@ -5,14 +5,14 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: "/Egg-Timer/",  // Add the leading slash
+  base: process.env.NODE_ENV === 'production' ? '/Egg-Timer/' : '/', // Use process.env.NODE_ENV instead of import.meta.env.MODE
   plugins: [
     vue(),
     vueDevTools(),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
 })
