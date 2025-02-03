@@ -5,7 +5,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/Egg-Timer/' : '/', // Use process.env.NODE_ENV instead of import.meta.env.MODE
+  base: process.env.NODE_ENV === 'production' ? '/Egg-Timer/' : '/', // Ensure the repo name is correct
   plugins: [
     vue(),
     vueDevTools(),
