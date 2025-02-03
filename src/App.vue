@@ -2,49 +2,55 @@
 import {onMounted, ref} from 'vue';
 import { gsap } from 'gsap-trial';
 
-const one_minute = ref("1 Minute");
-const one_minute2 = ref("3 Minutes");
-const one_minute3 = ref("5 Minutes");
+
+
 const countdown = ref(null);
 let customTime = ref("");
 let time = ref("0s");
-let currentRotation = 0;
+const timeline = gsap.timeline({ repeat: -1, yoyo: true});
+
+
 
 const alarmSound = new Audio("src/mp3/alarm.mp3");
 alarmSound.volume = 0.1;
 
 const startTimer = (seconds) => {
-  alarmSound.pause()
+  clearInterval(countdown.value)
+  alarmSound.pause();
   alarmSound.currentTime = 0;
-  let timeLeft = seconds; // Set countdown to 60 seconds
-  time.value = `${timeLeft}s`; // Update button text
+  let timeLeft = seconds;
+  time.value = `${timeLeft}s`;
 
-  // Clear any existing timer to avoid overlaps
   if (countdown.value) {
     clearInterval(countdown.value);
   }
+
+  gsap.set(".eggImg", { rotation: 0 });
   gsap.to(".eggImg", {
-    rotation: currentRotation += 360,
+    rotation: 360,
     duration: timeLeft,
     ease: "easeOut",
   });
 
+
   countdown.value = setInterval(() => {
-
     timeLeft--;
-    if (timeLeft > -1) {
-      time.value = `${timeLeft}s`; // Update button text with time remaining
-
+    if (timeLeft > 0) {
+      time.value = `${timeLeft}s`;
     } else {
-      clearInterval(countdown.value); // Stop timer
-      time.value = "0s"; // Reset button text
+      clearInterval(countdown.value);
+      time.value = "0s";
       alarmSound.play();
-
     }
-  }, 1000); // Run every second
+  }, 1000);
 };
-onMounted(() => {
 
+onMounted(() => {
+  timeline.to(".eggImg", {
+    y: 40,
+    duration: 1, // Adjust speed
+    ease: "power1.inOut"
+  });
 });
 
 </script>
@@ -55,15 +61,16 @@ onMounted(() => {
     <h1 class="black">Egg Timer</h1>
   <h1 class="time">{{time}}</h1>
 
+
     <div id="buttons" >
-      <button @click="startTimer(60)" class="btn">{{ one_minute }}</button>
-      <button @click="startTimer(3 * 60)" class="btn">{{ one_minute2 }}</button>
-      <button @click="startTimer(5 * 60)" class="btn">{{ one_minute3 }}</button>
+      <button @click="startTimer(60)" class="btn">1 Min.</button>
+      <button @click="startTimer(3 * 60)" class="btn">2 Min.</button>
+      <button @click="startTimer(5 * 60)" class="btn">3 Min.</button>
     </div>
 
 
-  <input class=" mt-3 mb-3 form-control" v-model="customTime" placeholder="Custom time" />
-  <button class="btn" @click="startTimer(customTime)">Set custom time</button>
+  <input class=" mt-3 mb-3 form-control" v-model="customTime" placeholder="Time (s)" />
+  <button class="btn" @click="startTimer(customTime)">Set</button>
 </template>
 
 <style>
@@ -109,9 +116,10 @@ h1 {
 
 .btn {
   background-color: #ff8800;
-  font-weight: bold;
+  font-size: 20px;
   color: white;
   transition: transform 0.5s ease, background-color 0.2s ease;
+  font-family: "Jersey 10"
 }
 
 .btn:hover {
