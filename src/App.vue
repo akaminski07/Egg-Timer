@@ -11,7 +11,7 @@ const timeline = gsap.timeline({ repeat: -1, yoyo: true});
 
 
 
-const alarmSound = new Audio("/alarm.mp3");
+const alarmSound = new Audio("public/alarm.mp3");
 alarmSound.volume = 0.1;
 
 const startTimer = (seconds) => {
@@ -58,7 +58,7 @@ onMounted(() => {
 <template>
 
   <img class="eggImg" src="/public/funny_egg.png" alt="egg" />
-    <h1 class="black">Egg Timer(This is a test)</h1>
+    <h1 class="black">Egg Timer</h1>
   <h1 class="time">{{time}}</h1>
 
 
