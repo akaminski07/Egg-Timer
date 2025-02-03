@@ -1,39 +1,49 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+//Imports
+import {onMounted, ref, computed} from 'vue';
 import { gsap } from 'gsap-trial';
-
-
 
 const countdown = ref(null);
 let customTime = ref("");
 let time = ref("0s");
 const timeline = gsap.timeline({ repeat: -1, yoyo: true});
 
-
-
-const alarmSound = new Audio("/Egg-Timer/alarm.mp3");
+//Audio
+const alarmSound = new Audio(`${import.meta.env.BASE_URL}alarm.mp3`);
 alarmSound.volume = 0.1;
 
-const startTimer = (seconds) => {
+//Convert time to minutes
+const formattedTime = computed(() => {
+  const timeLeft = parseInt(time.value);
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  return `${minutes}m ${seconds}s`;
+});
 
-  clearInterval(countdown.value)
-  alarmSound.pause();
-  alarmSound.currentTime = 0;
+//Start timer when a button is clicked
+const startTimer = (seconds) => {
+  customTime.value = ""
+  resetGSAP();
   let timeLeft = seconds;
   time.value = `${timeLeft}s`;
 
+  //Clear previous interval
   if (countdown.value) {
     clearInterval(countdown.value);
   }
 
+  //Egg rotating when timer is ticking
   gsap.set(".eggImg", { rotation: 0 });
   gsap.to(".eggImg", {
     rotation: 360,
     duration: timeLeft,
     ease: "easeOut",
+    onStart(){
+      eggJumping();
+    }
   });
 
-
+  //Make the timer tick per second
   countdown.value = setInterval(() => {
     timeLeft--;
     if (timeLeft > 0) {
@@ -45,43 +55,53 @@ const startTimer = (seconds) => {
     }
   }, 1000);
 };
-
-onMounted(() => {
-  timeline.to(".eggImg", {
-    y: 40,
-    duration: 1, // Adjust speed
+//Egg jumping up and down animation
+function eggJumping(){
+  timeline.fromTo(".eggImg", {
+    y: 20,
+    duration: 0.8,
+    ease: "power1.inOut"
+  },{
+    y: -20,
+    duration: 0.8,
     ease: "power1.inOut"
   });
+}
+//Reset animation to make it smooth
+function resetGSAP(){
+  gsap.killTweensOf(".eggImg");
+  gsap.set(".eggImg", {rotation: 0})
+  clearInterval(countdown.value)
+  alarmSound.pause();
+  alarmSound.currentTime = 0;
+}
+onMounted(() => {
+  //Start egg jump animation on entry
+  eggJumping();
 });
-
 </script>
-
 <template>
-
   <img class="eggImg" src="/public/funny_egg.png" alt="egg" />
-    <h1 class="black">Egg Timer</h1>
-  <h1 class="time">{{time}}</h1>
-
-
+    <h1 class="timerTitle">Egg Timer</h1>
+  <h1 class="time">{{ formattedTime }}</h1>
     <div id="buttons" >
       <button @click="startTimer(60)" class="btn">1 Min.</button>
-      <button @click="startTimer(3 * 60)" class="btn">2 Min.</button>
-      <button @click="startTimer(5 * 60)" class="btn">3 Min.</button>
+      <button @click="startTimer(3 * 60)" class="btn">3 Min.</button>
+      <button @click="startTimer(5 * 60)" class="btn">5 Min.</button>
     </div>
-
-
-  <input class=" mt-3 mb-3 form-control" v-model="customTime" placeholder="Time (s)" />
+  <input type="number" class="mt-3 mb-3 form-control" v-model="customTime" placeholder="Time (s)" />
   <button class="btn" style="width: 8rem" @click="startTimer(customTime)">Set</button>
 </template>
-
 <style>
-
 .form-control{
-  width: 10rem;
+  width: 8rem;
+  font-size: 20px;
+  border: 2px solid #ff8800;
 }
 
 body{
-  background-color: white;
+  background-color: #fff1dc;
+  font-family: "Jersey 10";
 }
 
 .eggImg{
@@ -100,11 +120,11 @@ body{
 h1 {
   margin-bottom: 20px;
   font-size: 2.8rem;
-  font-family: "Jersey 10"
 }
 
 .time{
   color: #2c2c2c;
+  font-size: 3rem;
 }
 
 #buttons {
@@ -120,7 +140,6 @@ h1 {
   font-size: 20px;
   color: white;
   transition: transform 0.5s ease, background-color 0.2s ease;
-  font-family: "Jersey 10";
 
 }
 
@@ -136,7 +155,7 @@ h1 {
   color: white;
 }
 
-.black {
+.timerTitle {
   color: #ff8800;
   font-size: 4rem;
 }
