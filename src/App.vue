@@ -22,11 +22,8 @@ const formattedTime = computed(() => {
   const seconds = timeLeft % 60;
   return `${minutes}m ${seconds}s`;
 });
-
-
 //Start timer when a button is clicked
 const startTimer = (seconds) => {
-
   resetGSAP();
   toggleButton()
   customTime.value = ""
@@ -123,11 +120,9 @@ const eggImageSrc = computed(() => {
       <button @click="startTimer(5 * 60)" class="btn">5 Min.</button>
     </div>
   <input
-      type="number"
       class="mt-3 form-control"
       v-model="customTime"
       :placeholder="errorText ? errorMessage : 'Time (s)'"
-
   />
   <button
       class="btn mt-3" style="width: 8.5rem" v-if="timerToggled" @click="startTimer(customTime);">Set</button>
@@ -174,7 +169,6 @@ h1 {
   flex-direction: row;
   justify-content: center;
   gap: 10px;
-
 }
 
 .btn {
