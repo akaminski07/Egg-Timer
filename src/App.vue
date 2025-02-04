@@ -7,6 +7,9 @@ const countdown = ref(null);
 let customTime = ref("");
 let time = ref("0s");
 const timeline = gsap.timeline({ repeat: -1, yoyo: true});
+const timerToggled = ref(true);
+let errorText = ref(false);
+let errorMessage = ref("Invalid Input!");
 
 //Audio
 const alarmSound = new Audio(`${import.meta.env.BASE_URL}alarm.mp3`);
@@ -14,33 +17,43 @@ alarmSound.volume = 0.1;
 
 //Convert time to minutes
 const formattedTime = computed(() => {
-  const timeLeft = parseInt(time.value);
+  const timeLeft = parseInt(time.value) || 0; // Ensure it's a number
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   return `${minutes}m ${seconds}s`;
 });
 
+
 //Start timer when a button is clicked
 const startTimer = (seconds) => {
-  customTime.value = ""
+
   resetGSAP();
+  toggleButton()
+  customTime.value = ""
   let timeLeft = seconds;
-  time.value = `${timeLeft}s`;
+  time.value = seconds;
+
+  setTimeout(() => {
+    errorText.value = false;
+  }, 800);
 
   //Clear previous interval
   if (countdown.value) {
     clearInterval(countdown.value);
   }
 
+  if (isNaN(seconds) || seconds <= 0) {
+    time.value = "0s";
+    showError();
+    timerToggled.value = true;
+    return;
+  }
   //Egg rotating when timer is ticking
   gsap.set(".eggImg", { rotation: 0 });
   gsap.to(".eggImg", {
     rotation: 360,
     duration: timeLeft,
     ease: "easeOut",
-    onStart(){
-      eggJumping();
-    }
   });
 
   //Make the timer tick per second
@@ -51,6 +64,7 @@ const startTimer = (seconds) => {
     } else {
       clearInterval(countdown.value);
       time.value = "0s";
+      timerToggled.value = true;
       alarmSound.play();
     }
   }, 1000);
@@ -69,7 +83,7 @@ function eggJumping(){
 }
 //Reset animation to make it smooth
 function resetGSAP(){
-  gsap.killTweensOf(".eggImg");
+  gsap.killTweensOf(".eggImg", "rotation");
   gsap.set(".eggImg", {rotation: 0})
   clearInterval(countdown.value)
   alarmSound.pause();
@@ -79,9 +93,28 @@ onMounted(() => {
   //Start egg jump animation on entry
   eggJumping();
 });
+
+function toggleButton() {
+  resetGSAP();
+  timerToggled.value = !timerToggled.value;
+  time.value = "0s";
+}
+
+function showError(){
+  if(errorText.value === false){
+    errorText.value = !errorText.value;
+  }
+}
+const isEggCracked = ref(false);  // Example condition
+
+// Function to return the image source based on the condition
+const eggImageSrc = computed(() => {
+  return isEggCracked.value ? '/public/funny_egg2.png' : '/public/funny_egg.png';
+});
+
 </script>
 <template>
-  <img class="eggImg" src="/public/funny_egg.png" alt="egg" />
+  <img class="eggImg" src="/public/funny_egg.png"  alt="egg" />
     <h1 class="timerTitle">Egg Timer</h1>
   <h1 class="time">{{ formattedTime }}</h1>
     <div id="buttons" >
@@ -89,12 +122,21 @@ onMounted(() => {
       <button @click="startTimer(3 * 60)" class="btn">3 Min.</button>
       <button @click="startTimer(5 * 60)" class="btn">5 Min.</button>
     </div>
-  <input type="number" class="mt-3 mb-3 form-control" v-model="customTime" placeholder="Time (s)" />
-  <button class="btn" style="width: 8rem" @click="startTimer(customTime)">Set</button>
+  <input
+      type="number"
+      class="mt-3 form-control"
+      v-model="customTime"
+      :placeholder="errorText ? errorMessage : 'Time (s)'"
+
+  />
+  <button
+      class="btn mt-3" style="width: 8.5rem" v-if="timerToggled" @click="startTimer(customTime);">Set</button>
+  <button class="btn mt-3" style="width: 8.5rem; background-color: #ff4216" v-else @click="; toggleButton()">Stop</button>
 </template>
 <style>
+
 .form-control{
-  width: 8rem;
+  width: 8.5rem;
   font-size: 20px;
   border: 2px solid #ff8800;
 }
