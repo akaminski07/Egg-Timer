@@ -24,9 +24,9 @@ const formattedTime = computed(() => {
 });
 //Start timer when a button is clicked
 const startTimer = (seconds) => {
-  resetGSAP();
-  toggleButton()
-  customTime.value = ""
+  timerToggled.value = true;
+  toggleButton();
+  customTime.value = "";
   let timeLeft = seconds;
   time.value = seconds;
 
